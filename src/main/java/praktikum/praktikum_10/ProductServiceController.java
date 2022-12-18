@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author user
  */
+//method request Http Get menggunakan HashMap
 @RestController
 public class ProductServiceController {
     private static Map<String, Product> productRepo = new HashMap<>();
@@ -40,18 +41,22 @@ public class ProductServiceController {
       
     }
     
+    //Method ini untuk menghapus produk
     @RequestMapping(value = "/products/{id}", method = RequestMethod.DELETE)
    public ResponseEntity<Object> delete(@PathVariable("id") String id) { 
       productRepo.remove(id);
       return new ResponseEntity<>("Product is deleted successsfully", HttpStatus.OK);
    }
    
+   //Method ini untuk memperbarui data (Update)
    @RequestMapping(value = "/products/{id}", method = RequestMethod.PUT)
    public ResponseEntity<Object> updateProduct(@PathVariable("id") String id, @RequestBody Product product) { 
      
+       //Membuat validasi ketika product tidak ditemukan
        if(!productRepo.containsKey(id)){
             return new ResponseEntity<>("Product Not Found, Please check again", HttpStatus.NOT_FOUND);
         }
+       //Kondisi jika product berhasil di edit dan di update
         else{
             productRepo.remove(id);
             product.setId(id);
@@ -61,18 +66,20 @@ public class ProductServiceController {
         
     }
    
+   //Method untuk create data product
     @RequestMapping(value = "/products", method = RequestMethod.POST)
    public ResponseEntity<Object> createProduct(@RequestBody Product product) {
-      
+      //Membuat Validasi id product jika id product yang akan ditambahkan sudah ada atau id-nya sama
        if(productRepo.containsKey(product.getId())){
             return new ResponseEntity<>("ID Product Cannot be the Same, please check again", HttpStatus.OK);
         }
+       //Kondisi jika product berhasil ditambahkan
         else{
             productRepo.put(product.getId(), product);
             return new ResponseEntity<>("Product is created Successfully", HttpStatus.CREATED);
         }
     }
-   
+   //Method untuk mendapatkan API product
    @RequestMapping(value = "/products")
    public ResponseEntity<Object> getProduct() {
       return new ResponseEntity<>(productRepo.values(), HttpStatus.OK);
